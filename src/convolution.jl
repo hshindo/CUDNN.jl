@@ -13,3 +13,6 @@ function CD(nd, padding, stride, upscale, mode, xtype)
 end
 
 Base.unsafe_convert(::Type{cudnnConvolutionDescriptor_t}, cd::CD) = cd.ptr
+
+function convolution_forward!()
+end

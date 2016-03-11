@@ -54,7 +54,6 @@ end
 include("filter.jl")
 include("convolution.jl")
 include("pooling.jl")
-include("activation.jl")
 
 ########## Misc ##########
 
