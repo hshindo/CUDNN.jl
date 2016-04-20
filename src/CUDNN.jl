@@ -16,14 +16,13 @@ isempty(libcudnn) && throw("CUDNN library cannot be found.")
 function checkstatus(status)
   if status != CUDNN_STATUS_SUCCESS
       Base.show_backtrace(STDOUT, backtrace())
-      println()
       throw(cudnnGetErrorString(status))
   end
 end
 
-datatype(a::AbstractCudaArray{Float32}) = CUDNN_DATA_FLOAT
-datatype(a::AbstractCudaArray{Float64}) = CUDNN_DATA_DOUBLE
-datatype(a::AbstractCudaArray{Float16}) = CUDNN_DATA_HALF
+datatype(a::CudaArray{Float32}) = CUDNN_DATA_FLOAT
+datatype(a::CudaArray{Float64}) = CUDNN_DATA_DOUBLE
+datatype(a::CudaArray{Float16}) = CUDNN_DATA_HALF
 
 ########## Handle ##########
 
@@ -41,18 +40,10 @@ function gethandle(dev::Int)
   end
 end
 
-function create_tensor_descriptor(a::AbstractCudaArray)
-  csize = Cint[size(a,i) for i=ndims(a):-1:1]
-  cstrides = Cint[stride(a,i) for i=ndims(a):-1:1]
-  p = cudnnTensorDescriptor_t[0]
-  cudnnCreateTensorDescriptor(p)
-  desc = p[1]
-  cudnnSetTensorNdDescriptor(desc, datatype(a), ndims(a), csize, cstrides)
-  desc
-end
-
-include("filter.jl")
+include("tensor.jl")
+include("activation.jl")
 include("convolution.jl")
+include("filter.jl")
 include("pooling.jl")
 
 ########## Misc ##########
