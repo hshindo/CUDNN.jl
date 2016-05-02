@@ -1,4 +1,5 @@
 # Adapted from CUDArt.jl/wrap_cuda.jl
+ ENV["LLVM_CONFIG"]="/home/shindo/local-pine/julia/usr/bin/llvm-config"
 using Clang
 
 # The following two likely need to be modified for the host system

@@ -1,10 +1,10 @@
-export TD
+export TensorDescriptor
 
-type TD
+type TensorDescriptor
   ptr
 end
 
-function TD(a::CudaArray)
+function TensorDescriptor(a::CudaArray)
   csize = Cint[size(a,i) for i=ndims(a):-1:1]
   cstrides = Cint[stride(a,i) for i=ndims(a):-1:1]
   p = cudnnTensorDescriptor_t[0]
@@ -15,4 +15,4 @@ function TD(a::CudaArray)
   td
 end
 
-Base.unsafe_convert(::Type{cudnnTensorDescriptor_t}, td::TD) = td.ptr
+Base.unsafe_convert(::Type{cudnnTensorDescriptor_t}, td::TensorDescriptor) = td.ptr

@@ -1,6 +1,6 @@
 module CUDNN
 
-using CUDArt
+using CUDA
 
 include("types.jl")
 include("libcudnn.jl")
@@ -49,7 +49,7 @@ include("pooling.jl")
 ########## Misc ##########
 
 """ y = alpha * x + beta * y """
-function add{T}(x::AbstractCudaArray{T}, y::AbstractCudaArray{T}; alpha=1.0, beta=0.0)
+function add{T}(x::CudaArray{T}, y::CudaArray{T}; alpha=1.0, beta=0.0)
   handle = gethandle(bias.dev)
   xdesc = descriptor(x)
   ydesc = descriptor(y)

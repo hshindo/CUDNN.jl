@@ -2,7 +2,7 @@ type FD
   ptr
 end
 
-function FD(a::AbstractCudaArray, format=CUDNN_TENSOR_NCHW)
+function FD(a::CudaArray, format=CUDNN_TENSOR_NCHW)
   csize = Cint[size(a,i) for i=ndims(a):-1:1]
   p = cudnnFilterDescriptor_t[0]
   cudnnCreateFilterDescriptor(p)
