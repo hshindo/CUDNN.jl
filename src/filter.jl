@@ -1,26 +1,15 @@
-type FD
+type FilterDescriptor
   ptr
 end
 
-function FD(a::CudaArray, format=CUDNN_TENSOR_NCHW)
+function FilterDescriptor(a::CudaArray, format=CUDNN_TENSOR_NCHW)
   csize = Cint[size(a,i) for i=ndims(a):-1:1]
   p = cudnnFilterDescriptor_t[0]
   cudnnCreateFilterDescriptor(p)
-  p = p[1]
-  cudnnSetFilterNdDescriptor_v4(p, datatype(a), format, ndims(a), csize)
-  fd = FD(p)
+  cudnnSetFilterNdDescriptor_v4(p[1], datatype(a), format, ndims(a), csize)
+  fd = FilterDescriptor(p[1])
   finalizer(fd, cudnnDestroyFilterDescriptor)
   fd
 end
 
-Base.unsafe_convert(::Type{cudnnFilterDescriptor_t}, fd::FD) = fd.ptr
-
-function filter_forward!()
-  csize = Cint[size(a,i) for i=ndims(a):-1:1]
-  p = cudnnFilterDescriptor_t[0]
-  cudnnCreateFilterDescriptor(p)
-  fdesc = p[1]
-  cudnnSetFilterNdDescriptor_v4(p, datatype(a), format, ndims(a), csize)
-
-
-end
+Base.unsafe_convert(::Type{cudnnFilterDescriptor_t}, fd::FilterDescriptor) = fd.ptr

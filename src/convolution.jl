@@ -4,20 +4,37 @@ type ConvolutionDescriptor
   ptr
 end
 
-function ConvolutionDescriptor(nd, padding, stride, upscale, mode, xtype)
+function ConvolutionDescriptor(x::CudaArray, nd::Int, pads::Vector{Int}, strides::Vector{Int};
+  upscales::Vector{Int}=Int[], mode=CUDNN_CONVOLUTION)
+  upscales = fill(1, nd)
   p = cudnnConvolutionDescriptor_t[0]
   cudnnCreateConvolutionDescriptor(p)
-  #cudnnSetConvolutionNdDescriptor(cd[1],nd,cdsize(padding,nd),cdsize(stride,nd),cdsize(upscale,nd),
-  #                                mode,cudnnDataType(xtype))
-  cd = ConvolutionDescriptor(p)
+  cudnnSetConvolutionNdDescriptor(p[1], nd, reverse(pads), reverse(strides), reverse(upscales), mode, datatype(x))
+  cd = ConvolutionDescriptor(p[1])
   finalizer(cd, cudnnDestroyConvolutionDescriptor)
   cd
 end
 
 Base.unsafe_convert(::Type{cudnnConvolutionDescriptor_t}, cd::ConvolutionDescriptor) = cd.ptr
 
-function convolution_forward!()
+function cudnnConvolutionForward(src, fd, dest;
+                                 handle=cudnnHandle, alpha=1.0, beta=0.0,
+                                 algorithm=CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM,
+                                 workSpace=C_NULL, workSpaceSizeInBytes=0,
+                                 cd=nothing, o...)
+
+function conovolution_forward!{T}(alpha, x::CudaArray{T}, fd, cd, algo)
+  cudnnConvolutionForward
+
+  handle = gethandle(x.dev)
+  
+
+  cudnnSetActivationDescriptor(ad, mode, relu_nanopt, relu_ceiling)
+  xdesc = TensorDescriptor(x)
+  ydesc = TensorDescriptor(y)
+  cudnnActivationForward(handle, ad, T[alpha], xdesc, x, T[beta], ydesc, y)
+  ad
 end
 
-function convolution_backward!()
+function conovolution_backward!()
 end

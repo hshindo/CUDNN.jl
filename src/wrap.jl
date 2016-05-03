@@ -1,5 +1,4 @@
 # Adapted from CUDArt.jl/wrap_cuda.jl
- ENV["LLVM_CONFIG"]="/home/shindo/local-pine/julia/usr/bin/llvm-config"
 using Clang
 
 # The following two likely need to be modified for the host system
@@ -31,7 +30,7 @@ function rewriter(ex::Expr)
     # omit types from function prototypes
     for i = 2:length(decl.args)
         a = decl.args[i]
-        if a.head == :(::)
+        if typeof(a) == Expr && a.head == :(::)
             decl.args[i] = a.args[1]
         end
     end
