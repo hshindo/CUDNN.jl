@@ -2,9 +2,9 @@
 
 using Compat
 
-const CUDNN_MAJOR = 4
+const CUDNN_MAJOR = 5
 const CUDNN_MINOR = 0
-const CUDNN_PATCHLEVEL = 7
+const CUDNN_PATCHLEVEL = 4
 const CUDNN_VERSION = CUDNN_MAJOR * 1000 + CUDNN_MINOR * 100 + CUDNN_PATCHLEVEL
 const CUDNN_DIM_MAX = 8
 const CUDNN_LRN_MIN_N = 1
@@ -58,6 +58,10 @@ typealias cudnnLRNStruct Void
 typealias cudnnLRNDescriptor_t Ptr{cudnnLRNStruct}
 typealias cudnnActivationStruct Void
 typealias cudnnActivationDescriptor_t Ptr{cudnnActivationStruct}
+typealias cudnnSpatialTransformerStruct Void
+typealias cudnnSpatialTransformerDescriptor_t Ptr{cudnnSpatialTransformerStruct}
+typealias cudnnOpTensorStruct Void
+typealias cudnnOpTensorDescriptor_t Ptr{cudnnOpTensorStruct}
 
 # begin enum ANONYMOUS_2
 typealias ANONYMOUS_2 UInt32
@@ -99,23 +103,19 @@ const CUDNN_TENSOR_NHWC = (UInt32)(1)
 
 # begin enum ANONYMOUS_5
 typealias ANONYMOUS_5 UInt32
-const CUDNN_ADD_IMAGE = (UInt32)(0)
-const CUDNN_ADD_SAME_HW = (UInt32)(0)
-const CUDNN_ADD_FEATURE_MAP = (UInt32)(1)
-const CUDNN_ADD_SAME_CHW = (UInt32)(1)
-const CUDNN_ADD_SAME_C = (UInt32)(2)
-const CUDNN_ADD_FULL_TENSOR = (UInt32)(3)
+const CUDNN_OP_TENSOR_ADD = (UInt32)(0)
+const CUDNN_OP_TENSOR_MUL = (UInt32)(1)
+const CUDNN_OP_TENSOR_MIN = (UInt32)(2)
+const CUDNN_OP_TENSOR_MAX = (UInt32)(3)
 # end enum ANONYMOUS_5
 
-# begin enum cudnnAddMode_t
-typealias cudnnAddMode_t UInt32
-const CUDNN_ADD_IMAGE = (UInt32)(0)
-const CUDNN_ADD_SAME_HW = (UInt32)(0)
-const CUDNN_ADD_FEATURE_MAP = (UInt32)(1)
-const CUDNN_ADD_SAME_CHW = (UInt32)(1)
-const CUDNN_ADD_SAME_C = (UInt32)(2)
-const CUDNN_ADD_FULL_TENSOR = (UInt32)(3)
-# end enum cudnnAddMode_t
+# begin enum cudnnOpTensorOp_t
+typealias cudnnOpTensorOp_t UInt32
+const CUDNN_OP_TENSOR_ADD = (UInt32)(0)
+const CUDNN_OP_TENSOR_MUL = (UInt32)(1)
+const CUDNN_OP_TENSOR_MIN = (UInt32)(2)
+const CUDNN_OP_TENSOR_MAX = (UInt32)(3)
+# end enum cudnnOpTensorOp_t
 
 # begin enum ANONYMOUS_6
 typealias ANONYMOUS_6 UInt32
@@ -151,6 +151,7 @@ const CUDNN_CONVOLUTION_FWD_ALGO_GEMM = (UInt32)(2)
 const CUDNN_CONVOLUTION_FWD_ALGO_DIRECT = (UInt32)(3)
 const CUDNN_CONVOLUTION_FWD_ALGO_FFT = (UInt32)(4)
 const CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING = (UInt32)(5)
+const CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD = (UInt32)(6)
 # end enum ANONYMOUS_8
 
 # begin enum cudnnConvolutionFwdAlgo_t
@@ -161,6 +162,7 @@ const CUDNN_CONVOLUTION_FWD_ALGO_GEMM = (UInt32)(2)
 const CUDNN_CONVOLUTION_FWD_ALGO_DIRECT = (UInt32)(3)
 const CUDNN_CONVOLUTION_FWD_ALGO_FFT = (UInt32)(4)
 const CUDNN_CONVOLUTION_FWD_ALGO_FFT_TILING = (UInt32)(5)
+const CUDNN_CONVOLUTION_FWD_ALGO_WINOGRAD = (UInt32)(6)
 # end enum cudnnConvolutionFwdAlgo_t
 
 immutable cudnnConvolutionFwdAlgoPerf_t
@@ -227,6 +229,7 @@ const CUDNN_CONVOLUTION_BWD_DATA_ALGO_0 = (UInt32)(0)
 const CUDNN_CONVOLUTION_BWD_DATA_ALGO_1 = (UInt32)(1)
 const CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT = (UInt32)(2)
 const CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT_TILING = (UInt32)(3)
+const CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD = (UInt32)(4)
 # end enum ANONYMOUS_12
 
 # begin enum cudnnConvolutionBwdDataAlgo_t
@@ -235,6 +238,7 @@ const CUDNN_CONVOLUTION_BWD_DATA_ALGO_0 = (UInt32)(0)
 const CUDNN_CONVOLUTION_BWD_DATA_ALGO_1 = (UInt32)(1)
 const CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT = (UInt32)(2)
 const CUDNN_CONVOLUTION_BWD_DATA_ALGO_FFT_TILING = (UInt32)(3)
+const CUDNN_CONVOLUTION_BWD_DATA_ALGO_WINOGRAD = (UInt32)(4)
 # end enum cudnnConvolutionBwdDataAlgo_t
 
 immutable cudnnConvolutionBwdDataAlgoPerf_t
@@ -331,3 +335,59 @@ typealias cudnnBatchNormMode_t UInt32
 const CUDNN_BATCHNORM_PER_ACTIVATION = (UInt32)(0)
 const CUDNN_BATCHNORM_SPATIAL = (UInt32)(1)
 # end enum cudnnBatchNormMode_t
+
+# begin enum ANONYMOUS_20
+typealias ANONYMOUS_20 UInt32
+const CUDNN_SAMPLER_BILINEAR = (UInt32)(0)
+# end enum ANONYMOUS_20
+
+# begin enum cudnnSamplerType_t
+typealias cudnnSamplerType_t UInt32
+const CUDNN_SAMPLER_BILINEAR = (UInt32)(0)
+# end enum cudnnSamplerType_t
+
+typealias cudnnDropoutStruct Void
+typealias cudnnDropoutDescriptor_t Ptr{cudnnDropoutStruct}
+
+# begin enum ANONYMOUS_21
+typealias ANONYMOUS_21 UInt32
+const CUDNN_RNN_RELU = (UInt32)(0)
+const CUDNN_RNN_TANH = (UInt32)(1)
+const CUDNN_LSTM = (UInt32)(2)
+const CUDNN_GRU = (UInt32)(3)
+# end enum ANONYMOUS_21
+
+# begin enum cudnnRNNMode_t
+typealias cudnnRNNMode_t UInt32
+const CUDNN_RNN_RELU = (UInt32)(0)
+const CUDNN_RNN_TANH = (UInt32)(1)
+const CUDNN_LSTM = (UInt32)(2)
+const CUDNN_GRU = (UInt32)(3)
+# end enum cudnnRNNMode_t
+
+# begin enum ANONYMOUS_22
+typealias ANONYMOUS_22 UInt32
+const CUDNN_UNIDIRECTIONAL = (UInt32)(0)
+const CUDNN_BIDIRECTIONAL = (UInt32)(1)
+# end enum ANONYMOUS_22
+
+# begin enum cudnnDirectionMode_t
+typealias cudnnDirectionMode_t UInt32
+const CUDNN_UNIDIRECTIONAL = (UInt32)(0)
+const CUDNN_BIDIRECTIONAL = (UInt32)(1)
+# end enum cudnnDirectionMode_t
+
+# begin enum ANONYMOUS_23
+typealias ANONYMOUS_23 UInt32
+const CUDNN_LINEAR_INPUT = (UInt32)(0)
+const CUDNN_SKIP_INPUT = (UInt32)(1)
+# end enum ANONYMOUS_23
+
+# begin enum cudnnRNNInputMode_t
+typealias cudnnRNNInputMode_t UInt32
+const CUDNN_LINEAR_INPUT = (UInt32)(0)
+const CUDNN_SKIP_INPUT = (UInt32)(1)
+# end enum cudnnRNNInputMode_t
+
+typealias cudnnRNNStruct Void
+typealias cudnnRNNDescriptor_t Ptr{cudnnRNNStruct}

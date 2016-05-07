@@ -22,12 +22,13 @@ function cudnnConvolutionForward(src, fd, dest;
                                  algorithm=CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM,
                                  workSpace=C_NULL, workSpaceSizeInBytes=0,
                                  cd=nothing, o...)
+                               end
 
 function conovolution_forward!{T}(alpha, x::CudaArray{T}, fd, cd, algo)
   cudnnConvolutionForward
 
   handle = gethandle(x.dev)
-  
+
 
   cudnnSetActivationDescriptor(ad, mode, relu_nanopt, relu_ceiling)
   xdesc = TensorDescriptor(x)

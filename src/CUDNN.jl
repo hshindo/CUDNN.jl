@@ -2,12 +2,12 @@ module CUDNN
 
 using CUDA
 
-include("types.jl")
+include("libcudnn_h.jl")
 include("libcudnn.jl")
 
 @windows? (
   begin
-    const libcudnn = Libdl.find_library(["cudnn64_4"])
+    const libcudnn = Libdl.find_library(["cudnn64_5"])
   end : begin
     const libcudnn = Libdl.find_library(["libcudnn"])
   end)

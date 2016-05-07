@@ -54,7 +54,7 @@ rewriter(s::Symbol) = string(s)
 rewriter(arg) = arg
 
 context=wrap_c.init(output_file="libcudnn.jl",
-                    common_file="types.jl",
+                    common_file="libcudnn_h.jl",
                     header_library=x->"libcudnn",
                     headers = headers,
                     clang_includes=includes,
