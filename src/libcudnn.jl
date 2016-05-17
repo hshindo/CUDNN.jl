@@ -362,10 +362,6 @@ function cudnnSpatialTfGridGeneratorBackward(handle,stDesc,dgrid,dtheta)
     checkstatus(ccall((:cudnnSpatialTfGridGeneratorBackward,libcudnn),cudnnStatus_t,(cudnnHandle_t,cudnnSpatialTransformerDescriptor_t,Ptr{Void},Ptr{Void}),handle,stDesc,dgrid,dtheta))
 end
 
-function cudnnSpatialTfGridGeneratorForward(handle,stDesc,theta,grid)
-    checkstatus(ccall((:cudnnSpatialTfGridGeneratorForward,libcudnn),cudnnStatus_t,(cudnnHandle_t,cudnnSpatialTransformerDescriptor_t,Ptr{Void},Ptr{Void}),handle,stDesc,theta,grid))
-end
-
 function cudnnSpatialTfSamplerForward(handle,stDesc,alpha,xDesc,x,grid,beta,yDesc,y)
     checkstatus(ccall((:cudnnSpatialTfSamplerForward,libcudnn),cudnnStatus_t,(cudnnHandle_t,cudnnSpatialTransformerDescriptor_t,Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},Ptr{Void},Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void}),handle,stDesc,alpha,xDesc,x,grid,beta,yDesc,y))
 end
@@ -410,44 +406,44 @@ function cudnnDestroyRNNDescriptor(rnnDesc)
     checkstatus(ccall((:cudnnDestroyRNNDescriptor,libcudnn),cudnnStatus_t,(cudnnRNNDescriptor_t,),rnnDesc))
 end
 
-function cudnnSetRNNDescriptor(rnnDesc,hiddenSize,seqLength,numLayers,dropoutDesc,inputMode,direction,mode,dataType)
-    checkstatus(ccall((:cudnnSetRNNDescriptor,libcudnn),cudnnStatus_t,(cudnnRNNDescriptor_t,Cint,Cint,Cint,cudnnDropoutDescriptor_t,cudnnRNNInputMode_t,cudnnDirectionMode_t,cudnnRNNMode_t,cudnnDataType_t),rnnDesc,hiddenSize,seqLength,numLayers,dropoutDesc,inputMode,direction,mode,dataType))
+function cudnnSetRNNDescriptor(rnnDesc,hiddenSize,numLayers,dropoutDesc,inputMode,direction,mode,dataType)
+    checkstatus(ccall((:cudnnSetRNNDescriptor,libcudnn),cudnnStatus_t,(cudnnRNNDescriptor_t,Cint,Cint,cudnnDropoutDescriptor_t,cudnnRNNInputMode_t,cudnnDirectionMode_t,cudnnRNNMode_t,cudnnDataType_t),rnnDesc,hiddenSize,numLayers,dropoutDesc,inputMode,direction,mode,dataType))
 end
 
-function cudnnGetRNNWorkspaceSize(handle,rnnDesc,xDesc,sizeInBytes)
-    checkstatus(ccall((:cudnnGetRNNWorkspaceSize,libcudnn),cudnnStatus_t,(cudnnHandle_t,cudnnRNNDescriptor_t,Ptr{cudnnTensorDescriptor_t},Ptr{Cint}),handle,rnnDesc,xDesc,sizeInBytes))
+function cudnnGetRNNWorkspaceSize(handle,rnnDesc,seqLength,xDesc,sizeInBytes)
+    checkstatus(ccall((:cudnnGetRNNWorkspaceSize,libcudnn),cudnnStatus_t,(cudnnHandle_t,cudnnRNNDescriptor_t,Cint,Ptr{cudnnTensorDescriptor_t},Ptr{Cint}),handle,rnnDesc,seqLength,xDesc,sizeInBytes))
 end
 
-function cudnnGetRNNTrainingReserveSize(handle,rnnDesc,xDesc,sizeInBytes)
-    checkstatus(ccall((:cudnnGetRNNTrainingReserveSize,libcudnn),cudnnStatus_t,(cudnnHandle_t,cudnnRNNDescriptor_t,Ptr{cudnnTensorDescriptor_t},Ptr{Cint}),handle,rnnDesc,xDesc,sizeInBytes))
+function cudnnGetRNNTrainingReserveSize(handle,rnnDesc,seqLength,xDesc,sizeInBytes)
+    checkstatus(ccall((:cudnnGetRNNTrainingReserveSize,libcudnn),cudnnStatus_t,(cudnnHandle_t,cudnnRNNDescriptor_t,Cint,Ptr{cudnnTensorDescriptor_t},Ptr{Cint}),handle,rnnDesc,seqLength,xDesc,sizeInBytes))
 end
 
-function cudnnGetRNNParamsSize(handle,rnnDesc,xDesc,sizeInBytes)
-    checkstatus(ccall((:cudnnGetRNNParamsSize,libcudnn),cudnnStatus_t,(cudnnHandle_t,cudnnRNNDescriptor_t,Ptr{cudnnTensorDescriptor_t},Ptr{Cint}),handle,rnnDesc,xDesc,sizeInBytes))
+function cudnnGetRNNParamsSize(handle,rnnDesc,xDesc,sizeInBytes,dataType)
+    checkstatus(ccall((:cudnnGetRNNParamsSize,libcudnn),cudnnStatus_t,(cudnnHandle_t,cudnnRNNDescriptor_t,cudnnTensorDescriptor_t,Ptr{Cint},cudnnDataType_t),handle,rnnDesc,xDesc,sizeInBytes,dataType))
 end
 
 function cudnnGetRNNLinLayerMatrixParams(handle,rnnDesc,layer,xDesc,wDesc,w,linLayerID,linLayerMatDesc,linLayerMat)
-    checkstatus(ccall((:cudnnGetRNNLinLayerMatrixParams,libcudnn),cudnnStatus_t,(cudnnHandle_t,cudnnRNNDescriptor_t,Cint,Ptr{cudnnTensorDescriptor_t},cudnnFilterDescriptor_t,Ptr{Void},Cint,cudnnFilterDescriptor_t,Ptr{Ptr{Void}}),handle,rnnDesc,layer,xDesc,wDesc,w,linLayerID,linLayerMatDesc,linLayerMat))
+    checkstatus(ccall((:cudnnGetRNNLinLayerMatrixParams,libcudnn),cudnnStatus_t,(cudnnHandle_t,cudnnRNNDescriptor_t,Cint,cudnnTensorDescriptor_t,cudnnFilterDescriptor_t,Ptr{Void},Cint,cudnnFilterDescriptor_t,Ptr{Ptr{Void}}),handle,rnnDesc,layer,xDesc,wDesc,w,linLayerID,linLayerMatDesc,linLayerMat))
 end
 
 function cudnnGetRNNLinLayerBiasParams(handle,rnnDesc,layer,xDesc,wDesc,w,linLayerID,linLayerBiasDesc,linLayerBias)
-    checkstatus(ccall((:cudnnGetRNNLinLayerBiasParams,libcudnn),cudnnStatus_t,(cudnnHandle_t,cudnnRNNDescriptor_t,Cint,Ptr{cudnnTensorDescriptor_t},cudnnFilterDescriptor_t,Ptr{Void},Cint,cudnnFilterDescriptor_t,Ptr{Ptr{Void}}),handle,rnnDesc,layer,xDesc,wDesc,w,linLayerID,linLayerBiasDesc,linLayerBias))
+    checkstatus(ccall((:cudnnGetRNNLinLayerBiasParams,libcudnn),cudnnStatus_t,(cudnnHandle_t,cudnnRNNDescriptor_t,Cint,cudnnTensorDescriptor_t,cudnnFilterDescriptor_t,Ptr{Void},Cint,cudnnFilterDescriptor_t,Ptr{Ptr{Void}}),handle,rnnDesc,layer,xDesc,wDesc,w,linLayerID,linLayerBiasDesc,linLayerBias))
 end
 
-function cudnnRNNForwardInference(handle,rnnDesc,xDesc,x,hxDesc,hx,cxDesc,cx,wDesc,w,yDesc,y,hyDesc,hy,cyDesc,cy,workspace,workSpaceSizeInBytes)
-    checkstatus(ccall((:cudnnRNNForwardInference,libcudnn),cudnnStatus_t,(cudnnHandle_t,cudnnRNNDescriptor_t,Ptr{cudnnTensorDescriptor_t},Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},cudnnFilterDescriptor_t,Ptr{Void},Ptr{cudnnTensorDescriptor_t},Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},Ptr{Void},Cint),handle,rnnDesc,xDesc,x,hxDesc,hx,cxDesc,cx,wDesc,w,yDesc,y,hyDesc,hy,cyDesc,cy,workspace,workSpaceSizeInBytes))
+function cudnnRNNForwardInference(handle,rnnDesc,seqLength,xDesc,x,hxDesc,hx,cxDesc,cx,wDesc,w,yDesc,y,hyDesc,hy,cyDesc,cy,workspace,workSpaceSizeInBytes)
+    checkstatus(ccall((:cudnnRNNForwardInference,libcudnn),cudnnStatus_t,(cudnnHandle_t,cudnnRNNDescriptor_t,Cint,Ptr{cudnnTensorDescriptor_t},Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},cudnnFilterDescriptor_t,Ptr{Void},Ptr{cudnnTensorDescriptor_t},Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},Ptr{Void},Cint),handle,rnnDesc,seqLength,xDesc,x,hxDesc,hx,cxDesc,cx,wDesc,w,yDesc,y,hyDesc,hy,cyDesc,cy,workspace,workSpaceSizeInBytes))
 end
 
-function cudnnRNNForwardTraining(handle,rnnDesc,xDesc,x,hxDesc,hx,cxDesc,cx,wDesc,w,yDesc,y,hyDesc,hy,cyDesc,cy,workspace,workSpaceSizeInBytes,reserveSpace,reserveSpaceSizeInBytes)
-    checkstatus(ccall((:cudnnRNNForwardTraining,libcudnn),cudnnStatus_t,(cudnnHandle_t,cudnnRNNDescriptor_t,Ptr{cudnnTensorDescriptor_t},Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},cudnnFilterDescriptor_t,Ptr{Void},Ptr{cudnnTensorDescriptor_t},Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},Ptr{Void},Cint,Ptr{Void},Cint),handle,rnnDesc,xDesc,x,hxDesc,hx,cxDesc,cx,wDesc,w,yDesc,y,hyDesc,hy,cyDesc,cy,workspace,workSpaceSizeInBytes,reserveSpace,reserveSpaceSizeInBytes))
+function cudnnRNNForwardTraining(handle,rnnDesc,seqLength,xDesc,x,hxDesc,hx,cxDesc,cx,wDesc,w,yDesc,y,hyDesc,hy,cyDesc,cy,workspace,workSpaceSizeInBytes,reserveSpace,reserveSpaceSizeInBytes)
+    checkstatus(ccall((:cudnnRNNForwardTraining,libcudnn),cudnnStatus_t,(cudnnHandle_t,cudnnRNNDescriptor_t,Cint,Ptr{cudnnTensorDescriptor_t},Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},cudnnFilterDescriptor_t,Ptr{Void},Ptr{cudnnTensorDescriptor_t},Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},Ptr{Void},Cint,Ptr{Void},Cint),handle,rnnDesc,seqLength,xDesc,x,hxDesc,hx,cxDesc,cx,wDesc,w,yDesc,y,hyDesc,hy,cyDesc,cy,workspace,workSpaceSizeInBytes,reserveSpace,reserveSpaceSizeInBytes))
 end
 
-function cudnnRNNBackwardData(handle,rnnDesc,yDesc,y,dyDesc,dy,dhyDesc,dhy,dcyDesc,dcy,wDesc,w,hxDesc,hx,cxDesc,cx,dxDesc,dx,dhxDesc,dhx,dcxDesc,dcx,workspace,workSpaceSizeInBytes,reserveSpace,reserveSpaceSizeInBytes)
-    checkstatus(ccall((:cudnnRNNBackwardData,libcudnn),cudnnStatus_t,(cudnnHandle_t,cudnnRNNDescriptor_t,Ptr{cudnnTensorDescriptor_t},Ptr{Void},Ptr{cudnnTensorDescriptor_t},Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},cudnnFilterDescriptor_t,Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},Ptr{cudnnTensorDescriptor_t},Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},Ptr{Void},Cint,Ptr{Void},Cint),handle,rnnDesc,yDesc,y,dyDesc,dy,dhyDesc,dhy,dcyDesc,dcy,wDesc,w,hxDesc,hx,cxDesc,cx,dxDesc,dx,dhxDesc,dhx,dcxDesc,dcx,workspace,workSpaceSizeInBytes,reserveSpace,reserveSpaceSizeInBytes))
+function cudnnRNNBackwardData(handle,rnnDesc,seqLength,yDesc,y,dyDesc,dy,dhyDesc,dhy,dcyDesc,dcy,wDesc,w,hxDesc,hx,cxDesc,cx,dxDesc,dx,dhxDesc,dhx,dcxDesc,dcx,workspace,workSpaceSizeInBytes,reserveSpace,reserveSpaceSizeInBytes)
+    checkstatus(ccall((:cudnnRNNBackwardData,libcudnn),cudnnStatus_t,(cudnnHandle_t,cudnnRNNDescriptor_t,Cint,Ptr{cudnnTensorDescriptor_t},Ptr{Void},Ptr{cudnnTensorDescriptor_t},Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},cudnnFilterDescriptor_t,Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},Ptr{cudnnTensorDescriptor_t},Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},Ptr{Void},Cint,Ptr{Void},Cint),handle,rnnDesc,seqLength,yDesc,y,dyDesc,dy,dhyDesc,dhy,dcyDesc,dcy,wDesc,w,hxDesc,hx,cxDesc,cx,dxDesc,dx,dhxDesc,dhx,dcxDesc,dcx,workspace,workSpaceSizeInBytes,reserveSpace,reserveSpaceSizeInBytes))
 end
 
-function cudnnRNNBackwardWeights(handle,rnnDesc,xDesc,x,hxDesc,hx,yDesc,y,workspace,workSpaceSizeInBytes,dwDesc,dw,reserveSpace,reserveSpaceSizeInBytes)
-    checkstatus(ccall((:cudnnRNNBackwardWeights,libcudnn),cudnnStatus_t,(cudnnHandle_t,cudnnRNNDescriptor_t,Ptr{cudnnTensorDescriptor_t},Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},Ptr{cudnnTensorDescriptor_t},Ptr{Void},Ptr{Void},Cint,cudnnFilterDescriptor_t,Ptr{Void},Ptr{Void},Cint),handle,rnnDesc,xDesc,x,hxDesc,hx,yDesc,y,workspace,workSpaceSizeInBytes,dwDesc,dw,reserveSpace,reserveSpaceSizeInBytes))
+function cudnnRNNBackwardWeights(handle,rnnDesc,seqLength,xDesc,x,hxDesc,hx,yDesc,y,workspace,workSpaceSizeInBytes,dwDesc,dw,reserveSpace,reserveSpaceSizeInBytes)
+    checkstatus(ccall((:cudnnRNNBackwardWeights,libcudnn),cudnnStatus_t,(cudnnHandle_t,cudnnRNNDescriptor_t,Cint,Ptr{cudnnTensorDescriptor_t},Ptr{Void},cudnnTensorDescriptor_t,Ptr{Void},Ptr{cudnnTensorDescriptor_t},Ptr{Void},Ptr{Void},Cint,cudnnFilterDescriptor_t,Ptr{Void},Ptr{Void},Cint),handle,rnnDesc,seqLength,xDesc,x,hxDesc,hx,yDesc,y,workspace,workSpaceSizeInBytes,dwDesc,dw,reserveSpace,reserveSpaceSizeInBytes))
 end
 
 function cudnnSetFilter4dDescriptor_v3(filterDesc,dataType,k,c,h,w)

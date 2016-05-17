@@ -16,13 +16,10 @@ isempty(libcudnn) && throw("CUDNN library cannot be found.")
 function checkstatus(status)
   if status != CUDNN_STATUS_SUCCESS
       Base.show_backtrace(STDOUT, backtrace())
-      throw(cudnnGetErrorString(status))
+      throw(bytestring(cudnnGetErrorString(status)))
   end
 end
 
-datatype(a::CuArray{Float32}) = CUDNN_DATA_FLOAT
-datatype(a::CuArray{Float64}) = CUDNN_DATA_DOUBLE
-datatype(a::CuArray{Float16}) = CUDNN_DATA_HALF
 datatype(::Type{Float32}) = CUDNN_DATA_FLOAT
 datatype(::Type{Float64}) = CUDNN_DATA_DOUBLE
 datatype(::Type{Float16}) = CUDNN_DATA_HALF
