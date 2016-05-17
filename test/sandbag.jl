@@ -2,11 +2,11 @@ workspace()
 using CUDA
 using CUDNN
 
-x = randn(10,5,1,1) |> CudaArray
-xx = Array(x)
+x = randn(10,5,1,1) |> CuArray
+y = randn(10,5,1,1) |> CuArray
+y = softmax(CUDNN_SOFTMAX_ACCURATE, CUDNN_SOFTMAX_MODE_INSTANCE, x)
+yy = Array(y)
 
-activation_forward!(CUDNN_ACTIVATION_RELU, 1.0, x, 0.0, x)
-Array(x)
 
 function bench()
   x = rand(Float32,100,100,10,10) |> CudaArray

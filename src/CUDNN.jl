@@ -20,13 +20,16 @@ function checkstatus(status)
   end
 end
 
-datatype(a::CudaArray{Float32}) = CUDNN_DATA_FLOAT
-datatype(a::CudaArray{Float64}) = CUDNN_DATA_DOUBLE
-datatype(a::CudaArray{Float16}) = CUDNN_DATA_HALF
+datatype(a::CuArray{Float32}) = CUDNN_DATA_FLOAT
+datatype(a::CuArray{Float64}) = CUDNN_DATA_DOUBLE
+datatype(a::CuArray{Float16}) = CUDNN_DATA_HALF
+datatype(::Type{Float32}) = CUDNN_DATA_FLOAT
+datatype(::Type{Float64}) = CUDNN_DATA_DOUBLE
+datatype(::Type{Float16}) = CUDNN_DATA_HALF
 
 ########## Handle ##########
 
-const handles = Dict{Int, cudnnHandle_t}()
+const handles = Dict{Int,cudnnHandle_t}()
 atexit(() -> for h in handles destroy(h) end)
 
 function gethandle(dev::Int)
@@ -44,15 +47,6 @@ include("tensor.jl")
 include("activation.jl")
 include("convolution.jl")
 include("filter.jl")
-include("pooling.jl")
-
-########## Misc ##########
-
-""" y = alpha * x + beta * y """
-function add{T}(x::CudaArray{T}, y::CudaArray{T}; alpha=1.0, beta=0.0)
-  handle = gethandle(bias.dev)
-  xdesc = descriptor(x)
-  ydesc = descriptor(y)
-end
+include("softmax.jl")
 
 end
