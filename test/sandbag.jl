@@ -6,7 +6,7 @@ x = rand(Float32,5,4,3,2) |> CuArray
 Array(x)
 w = CuArray(rand(Float32,2,2,3,4))
 Array(w)
-desc = ConvolutionDesc(Float32, (1,1), (1,1))
+desc = ConvolutionDesc(Float32, (0,0), (1,1))
 y = CUDNN.convolution(x, w, desc)
 Array(y)
 
