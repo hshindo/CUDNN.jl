@@ -15,8 +15,8 @@ isempty(libcudnn) && throw("CUDNN library cannot be found.")
 
 function checkstatus(status)
   if status != CUDNN_STATUS_SUCCESS
-      Base.show_backtrace(STDOUT, backtrace())
-      throw(bytestring(cudnnGetErrorString(status)))
+    Base.show_backtrace(STDOUT, backtrace())
+    throw(bytestring(cudnnGetErrorString(status)))
   end
 end
 

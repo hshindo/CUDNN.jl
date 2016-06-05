@@ -9,27 +9,29 @@ end
 function ActivationDesc(mode; relu_nanopt=CUDNN_NOT_PROPAGATE_NAN, relu_ceiling=1.0)
   p = Ptr{Void}[0]
   cudnnCreateActivationDescriptor(p)
-  ad = new(p[1])
+  desc = new(p[1])
   finalizer(ad, cudnnDestroyActivationDescriptor)
-  cudnnSetActivationDescriptor(ad, mode, relu_nanopt, relu_ceiling)
-  ad
+  cudnnSetActivationDescriptor(desc, mode, relu_nanopt, relu_ceiling)
+  desc
 end
 
-Base.unsafe_convert(::Type{Ptr{Void}}, ad::ActivationDesc) = ad.ptr
+Base.unsafe_convert(::Type{Ptr{Void}}, desc::ActivationDesc) = desc.ptr
 
 """
 reluNanOpt: whether propagates NaN or not
 reluCeiling: floating point number to specify the clipping threashod
 when the activation mode is set to CUDNN_ACTIVATION_CLIPPED_RELU.
 """
-function activation!{T}(desc, x::CuArray{T}, y::CuArray{T}; alpha=1.0, beta=0.0)
+function activation!{T}(desc, x::CuArray{T}, y::CuArray{T};
+  alpha=1.0, beta=0.0)
+
   h = gethandle(x.dev)
   xdesc = TensorDesc(x)
   ydesc = TensorDesc(y)
   cudnnActivationForward(h, desc, T[alpha], xdesc, x, T[beta], ydesc, y)
   y
 end
-activation{T}(desc, x::CuArray{T}) = activation!(desc, x, similar(x))
+activation(desc, x::CuArray; alpha=1.0) = activation!(desc, x, similar(x), alpha=alpha)
 
 function ∇activation!{T}(desc, y::CuArray{T}, dy::CuArray{T}, x::CuArray{T}, dx::CuArray{T};
   alpha=1.0, beta=0.0)
