@@ -5,13 +5,19 @@ using CUDA
 include("libcudnn_h.jl")
 include("libcudnn.jl")
 
+version() = Int(cudnnGetVersion())
+
 @windows? (
   begin
     const libcudnn = Libdl.find_library(["cudnn64_5"])
   end : begin
     const libcudnn = Libdl.find_library(["libcudnn"])
   end)
-isempty(libcudnn) && throw("CUDNN library cannot be found.")
+if isempty(libcudnn)
+  throw("CUDNN library cannot be found.")
+else
+  println("CUDNN version $(version()) is loaded.")
+end
 
 function checkstatus(status)
   if status != CUDNN_STATUS_SUCCESS
