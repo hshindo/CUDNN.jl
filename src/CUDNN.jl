@@ -24,22 +24,7 @@ datatype(::Type{Float32}) = CUDNN_DATA_FLOAT
 datatype(::Type{Float64}) = CUDNN_DATA_DOUBLE
 datatype(::Type{Float16}) = CUDNN_DATA_HALF
 
-########## Handle ##########
-
-const handles = Dict{Int,cudnnHandle_t}()
-atexit(() -> for h in handles destroy(h) end)
-
-function gethandle(dev::Int)
-  if !haskey(handles, dev)
-    h = cudnnHandle_t[0]
-    cudnnCreate(h)
-    handles[dev] = h[1]
-    h[1]
-  else
-    handles[dev]
-  end
-end
-
+include("handle.jl")
 include("tensor.jl")
 include("activation.jl")
 include("convolution.jl")

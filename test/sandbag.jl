@@ -2,6 +2,18 @@ workspace()
 using CUDA
 using CUDNN
 
+function bench()
+  x = CuArray(rand(Float32,30,30,3,10))
+  #desc = CUDNN.ActivationDesc(CUDNN_ACTIVATION_SIGMOID)
+  for i = 1:1000
+    y = similar(x)
+    CUDNN.activation!(CUDNN_ACTIVATION_SIGMOID, x, y)
+  end
+  sync()
+end
+@time bench()
+
+CUDA.cugc()
 x = rand(Float32,5,4,3,2) |> CuArray
 Array(x)
 w = CuArray(rand(Float32,2,2,3,4))

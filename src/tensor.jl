@@ -1,21 +1,11 @@
-export TensorDesc
-
-type TensorDesc
-  ptr::Ptr{Void}
-
-  function TensorDesc{T}(a::CuArray{T})
-    csize = Cint[size(a,i) for i=ndims(a):-1:1]
-    cstrides = Cint[stride(a,i) for i=ndims(a):-1:1]
-    p = Ptr{Void}[0]
-    cudnnCreateTensorDescriptor(p)
-    td = new(p[1])
-    finalizer(td, cudnnDestroyTensorDescriptor)
-    cudnnSetTensorNdDescriptor(td, datatype(T), ndims(a), csize, cstrides)
-    td
-  end
+function tensor_desc{T}(a::CuArray{T})
+  csize = Cint[size(a,i) for i=ndims(a):-1:1]
+  cstrides = Cint[stride(a,i) for i=ndims(a):-1:1]
+  p = Ptr{Void}[0]
+  cudnnCreateTensorDescriptor(p)
+  cudnnSetTensorNdDescriptor(p[1], datatype(T), ndims(a), csize, cstrides)
+  p[1]
 end
-
-Base.unsafe_convert(::Type{Ptr{Void}}, td::TensorDesc) = td.ptr
 
 # y = alpha*x + beta*y
 function add{T}(alpha, x::CuArray{T}, beta, y::CuArray{T})
