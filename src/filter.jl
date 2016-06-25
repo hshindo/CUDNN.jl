@@ -1,4 +1,4 @@
-function filter_desc(a::CuArray{T}, format=CUDNN_TENSOR_NCHW)
+function filter_desc{T}(a::CuArray{T}, format=CUDNN_TENSOR_NCHW)
   csize = Cint[size(a,i) for i=ndims(a):-1:1]
   #csize = Cint[size(a,i) for i=1:ndims(a)]
   p = Ptr{Void}[0]
