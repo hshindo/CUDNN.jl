@@ -1,6 +1,14 @@
 export activation!
-export CUDNN_ACTIVATION_SIGMOID, CUDNN_ACTIVATION_RELU, CUDNN_ACTIVATION_TANH, CUDNN_ACTIVATION_CLIPPED_RELU
-export CUDNN_NOT_PROPAGATE_NAN, CUDNN_PROPAGATE_NAN
+export
+  CUDNN_ACTIVATION_SIGMOID, CUDNN_ACTIVATION_RELU,
+  CUDNN_ACTIVATION_TANH, CUDNN_ACTIVATION_CLIPPED_RELU
+
+function activation_desc(mode, relu_nanopt, relu_ceiling)
+  p = Ptr{Void}[0]
+  cudnnCreateActivationDescriptor(p)
+  cudnnSetActivationDescriptor(p[1], mode, relu_nanopt, relu_ceiling)
+  p[1]
+end
 
 """
 reluNanOpt: whether propagates NaN or not
@@ -40,11 +48,4 @@ function ∇activation!{T}(mode, y::CuArray{T}, dy::CuArray{T}, x::CuArray{T}, d
   cudnnDestroyTensorDescriptor(xdesc)
   cudnnDestroyTensorDescriptor(dxdesc)
   dx
-end
-
-function activation_desc(mode, relu_nanopt, relu_ceiling)
-  p = Ptr{Void}[0]
-  cudnnCreateActivationDescriptor(p)
-  cudnnSetActivationDescriptor(p[1], mode, relu_nanopt, relu_ceiling)
-  p[1]
 end

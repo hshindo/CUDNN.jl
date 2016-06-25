@@ -1,3 +1,9 @@
+export
+  CUDNN_NOT_PROPAGATE_NAN, CUDNN_PROPAGATE_NAN,
+
+  CUDNN_OP_TENSOR_ADD, CUDNN_OP_TENSOR_MUL,
+  CUDNN_OP_TENSOR_MIN, CUDNN_OP_TENSOR_MAX
+
 function tensor_desc{T,N}(a::CuArray{T,N})
   if N < 4
     # might be inefficient
@@ -25,33 +31,49 @@ function transform(x::CuArray)
 end
 
 """
-    add(alpha, x, beta, y)
-
 y = alpha*x + beta*y
 """
 function add!{T}(alpha, x::CuArray{T}, beta, y::CuArray{T})
   h = gethandle(x.dev)
   xdesc, ydesc = tensor_desc(x), tensor_desc(y)
   cudnnAddTensor(h, T[alpha], xdesc, x, T[beta], ydesc, y)
-
   cudnnDestroyTensorDescriptor(xdesc)
   cudnnDestroyTensorDescriptor(ydesc)
   y
 end
 
-# C = op ( alpha1[0] * A, alpha2[0] * B ) + beta[0] * C
-function optensor()
+"""
+C = op ( alpha1[0] * A, alpha2[0] * B ) + beta[0] * C
+"""
+function op!{T}(op, A::CuArray{T}, B::CuArray{T}, C::CuArray{T};
+  alpha1=1.0, alpha2=1.0, beta=0.0, nan_opt=CUDNN_NOT_PROPAGATE_NAN)
+
+  h = gethandle(A.dev)
+  p = Ptr{Void}[0]
+  cudnnCreateOpTensorDescriptor(p)
+  opdesc = p[1]
+  cudnnSetOpTensorDescriptor(opdesc, op, datatype(T), nan_opt)
+  adesc, bdesc, cdesc = tensor_desc(A), tensor_desc(B), tensor_desc(C)
+  cudnnOpTensor(h, opdesc, T[alpha1], adesc, A, T[alpha2], bdesc, B, T[beta], cdesc, C)
+
+  cudnnDestroyTensorDescriptor(adesc)
+  cudnnDestroyTensorDescriptor(bdesc)
+  cudnnDestroyTensorDescriptor(cdesc)
+  C
 end
 
-function set{T}(y::CuArray{T}, value)
+function set!{T}(y::CuArray{T}, value)
   h = gethandle(y.dev)
-  ydesc = TensorDesc(y)
+  ydesc = tensor_desc(y)
   cudnnSetTensor(h, ydesc, y, T[value])
+  cudnnDestroyTensorDescriptor(ydesc)
+  y
 end
 
-# y = alpha * y
-function scale{T}(y::CuArray{T}, alpha)
+function scale!{T}(y::CuArray{T}, alpha)
   h = gethandle(y.dev)
-  ydesc = TensorDesc(y)
+  ydesc = tensor_desc(y)
   cudnnScaleTensor(h, ydesc, y, T[alpha])
+  cudnnDestroyTensorDescriptor(ydesc)
+  y
 end
