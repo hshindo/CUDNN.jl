@@ -35,7 +35,7 @@ function convolution_desc(padding, stride)
   p[1]
 end
 
-function convolution!{T}(x::CuArray, w::CuArray, padding, stride, y::CuArray;
+function convolution!{T}(x::CuArray{T}, w::CuArray{T}, padding, stride, y::CuArray{T};
   mode=CUDNN_CROSS_CORRELATION, alpha=1.0, beta=0.0)
 
   h = gethandle(x.dev)
@@ -76,7 +76,7 @@ function convolution(x::CuArray, w::CuArray, padding, stride;
   convolution!(x, w, padding, stride, y, mode=mode, alpha=alpha)
 end
 
-function ∇convolution_bias!{T}(dy::CuArray, db::CuArray{T}; alpha=1.0, beta=0.0)
+function ∇convolution_bias!{T}(dy::CuArray{T}, db::CuArray{T}; alpha=1.0, beta=0.0)
   h = gethandle(x.dev)
   dydesc = tensor_desc(dy)
   dbdesc = tensor_desc(db)

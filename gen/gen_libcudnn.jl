@@ -13,6 +13,7 @@ headers = ["/home/shindo/cudnn.h"]
 #const skip_error_check = [:cudaStreamQuery,:cudaGetLastError,:cudaPeekAtLastError]
 const skip_expr = []
 const skip_error_check = []
+
 function rewriter(ex::Expr)
     if in(ex, skip_expr)
         return :()
@@ -48,7 +49,6 @@ function rewriter(ex::Expr)
     end
     ex
 end
-
 rewriter(A::Array) = [rewriter(a) for a in A]
 rewriter(s::Symbol) = string(s)
 rewriter(arg) = arg

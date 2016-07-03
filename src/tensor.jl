@@ -33,7 +33,7 @@ end
 """
 y = alpha*x + beta*y
 """
-function add!{T}(alpha, x::CuArray{T}, beta, y::CuArray{T})
+function add!{T}(x::CuArray{T}, y::CuArray{T}; alpha=1.0, beta=1.0)
   h = gethandle(x.dev)
   xdesc, ydesc = tensor_desc(x), tensor_desc(y)
   cudnnAddTensor(h, T[alpha], xdesc, x, T[beta], ydesc, y)

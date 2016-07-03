@@ -2,10 +2,8 @@ module CUDNN
 
 using CUDA
 
-include("libcudnn_h.jl")
-include("libcudnn.jl")
-
-version() = Int(cudnnGetVersion())
+include("../libcudnn-5/libcudnn.jl")
+include("../libcudnn-5/libcudnn_types.jl")
 
 @windows? (
   begin
@@ -13,11 +11,7 @@ version() = Int(cudnnGetVersion())
   end : begin
     const libcudnn = Libdl.find_library(["libcudnn"])
   end)
-if isempty(libcudnn)
-  throw("CUDNN library cannot be found.")
-else
-  println("CUDNN version $(version()) is loaded.")
-end
+isempty(libcudnn) && throw("CUDNN library cannot be found.")
 
 function checkstatus(status)
   if status != CUDNN_STATUS_SUCCESS
